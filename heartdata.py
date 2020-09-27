@@ -45,14 +45,16 @@ def upload_file():
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-  dataset = loadtxt(filename, delimiter=",", skiprows=1, usecols=range(1,15))
+  data = pandas.read_csv(filename)
+  cols = len(data.columns)
+  dataset = loadtxt(filename, delimiter=",", skiprows=1, usecols=range(0, len(data.columns)))
 
-  X = dataset[:,0:13]
-  Y = dataset[:,13]
+  X = dataset[:,0:cols - 1]
+  Y = dataset[:,cols - 1]
 
   seed = np.random.seed()
 
-  test_size = 0.2
+  test_size = .2
   X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size, random_state=seed)
 
   model = XGBClassifier()
@@ -63,7 +65,7 @@ def uploaded_file(filename):
 
   accuracy = accuracy_score(Y_test, predictions)
 
-  print("Accuracy: %.2f%%" % (accuracy * 100.0))
+  flash("Accuracy: %.2f%%" % (accuracy * 100.0))
 
   confusion = confusion_matrix(Y_test, Y_pred)
   matrix = DataFrame({'Predicted 0': confusion[0],

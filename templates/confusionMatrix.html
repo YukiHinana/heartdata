@@ -9,12 +9,22 @@
             <h1>Confushion Matrix</h1>
             <div style="height: 10px"></div>
             <p>
-                Here is your GODDAMN matrix
+            Calculated confusion matrix 
             </p>
             Confusion Matrix
             {% for table in tables %}
                 {{ table| safe }}
             {% endfor %}
+            <hr>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
         </div>
     </body>
 </html>
