@@ -4,19 +4,22 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 from flask import Flask, render_template, flash
+
 import emoji
 
 app = Flask(__name__, template_folder='templates')
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 
-@app.route('/')
-def machine_learning_model():
-  dataset = loadtxt('heart_data_resampled.csv', delimiter=",", skiprows=1, usecols=range(1,15))
+
+@app.route('/<datafile>')
+def machine_learning_model(datafile):
+  dataset = loadtxt(datafile, delimiter=",", skiprows=1, usecols=range(1,15))
 
   X = dataset[:,0:13]
   Y = dataset[:,13]
 
   seed = 1
+
   test_size = 0.2
   X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size, random_state=seed)
 
@@ -29,12 +32,24 @@ def machine_learning_model():
   accuracy = accuracy_score(Y_test, predictions)
 
   print("Accuracy: %.2f%%" % (accuracy * 100.0))
+  print("line35")
 
   confusion = confusion_matrix(Y_test, Y_pred)
 
-  flash (str(confusion[0]) + "\n" + str(confusion[1]))
+
+
+  print("confusion")
+  flash(str(confusion))
+
+  #flash (str(confusion[0]) + "\n" + str(confusion[1]))
+  print("gang gang41")
+
   return render_template('pigboi77.html')
 
+
+
 if __name__ == "__main__":
-    app.run(debug = True)
+  #machine_learning_model('/Users/alexmazon/Desktop/CSDS397/HeartData/heartdata/heart_data_resampled.csv')
+
+  app.run(debug = True)
 

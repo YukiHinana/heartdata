@@ -11,6 +11,7 @@ numpy = "*"
 xgboost = "*"
 sklearn = "*"
 emoji = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.8"
