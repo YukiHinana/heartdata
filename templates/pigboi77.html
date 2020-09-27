@@ -12,10 +12,9 @@
         Import your CSV file with the following format: <br>
         Variables (units) [usual range]
       </p>
-      <form action="" method="post" novalidate>
-        <label for="avatar">Choose CSV file:</label>
-        <input type="file"
-            accept=".csv">
+      <form method=post enctype=multipart/form-data>
+        <input type=file name=file>
+        <input type=submit value=Upload>
       </form>
       <hr>
         {% with messages = get_flashed_messages() %}
