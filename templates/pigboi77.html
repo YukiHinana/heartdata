@@ -9,25 +9,24 @@
       <h1>Mashine Learning &#128540</h1>
       <div style="height: 10px"></div>
       <p>
-        Import your CSV file with the following format: <br>
-        Variables (units) [usual range]
+        Import your CSV file with all variables in the first row<br>
       </p>
-      <div>
-      <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-          <div class="form-group">
-            <label>{{ form.column_index.label }}</label>
-
-            <div class="form-check">
-              {{ form.column_index(class='form-check-input') }}
-
-            </div>
-            
-      </form>
       <form method=post enctype=multipart/form-data>
         <input type=file name=file>
-        <input type=submit value=Upload>
-      </form>
+        <hr style="border: 1px solid black;" />
+        Does your CSV file contain an indexing column? <br>
+        <input type="radio" name="index" id="option1" value="True"> Yes </input><br>
+        <input type="radio" name="index" id="option2" value="False"> No </input><br>
+        <input type="submit" value=Submit>
     </div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
   </body>
 </html>

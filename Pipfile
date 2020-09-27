@@ -10,7 +10,6 @@ flask = "*"
 numpy = "*"
 xgboost = "*"
 sklearn = "*"
-emoji = "*"
 werkzeug = "*"
 pandas = "*"
 
