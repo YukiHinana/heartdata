@@ -4,9 +4,10 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 from flask import Flask, render_template, flash, request, redirect, url_for, send_from_directory
+from werkzeug.utils import secure_filename
 import os
 import emoji
-from werkzeug.utils import secure_filename
+from pandas import *
 
 
 basedir = os.path.abspath(os.path.dirname(__file__)) 
@@ -49,7 +50,7 @@ def uploaded_file(filename):
   X = dataset[:,0:13]
   Y = dataset[:,13]
 
-  seed = 7
+  seed = np.random.seed()
 
   test_size = 0.2
   X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size, random_state=seed)
@@ -65,9 +66,12 @@ def uploaded_file(filename):
   print("Accuracy: %.2f%%" % (accuracy * 100.0))
 
   confusion = confusion_matrix(Y_test, Y_pred)
-  flash(str(confusion))
+  matrix = DataFrame({'Predicted 0': confusion[0],
+                      'Predicted 1': confusion[1]},
+                      index=['Actual 0', 'Actual 1'])
 
-  return render_template('pigboi77.html')
+
+  return render_template('confusionMatrix.html',  tables=[matrix.to_html(classes='data')], titles=matrix.columns.values)
 
 if __name__ == "__main__":
   app.run(debug = True)
