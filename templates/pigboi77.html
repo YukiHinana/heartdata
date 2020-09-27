@@ -12,6 +12,18 @@
         Import your CSV file with the following format: <br>
         Variables (units) [usual range]
       </p>
+      <div>
+      <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+          <div class="form-group">
+            <label>{{ form.column_index.label }}</label>
+
+            <div class="form-check">
+              {{ form.column_index(class='form-check-input') }}
+
+            </div>
+            
+      </form>
       <form method=post enctype=multipart/form-data>
         <input type=file name=file>
         <input type=submit value=Upload>

@@ -1,5 +1,8 @@
 from numpy import loadtxt
 import numpy as np
+from flask_wtf import FlaskForm
+from wtforms import StringField, IntegerField, PasswordField, BooleanField, SubmitField, RadioField
+from wtforms.validators import DataRequired
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -19,12 +22,21 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 
+class ColForm(FlaskForm):
+    column_index = RadioField('Is the first column indexed',
+                                    choices=[('Yes', 'Yes'), ('No', 'No')], validators=[DataRequired()])
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
+    form = ColForm()
+
+    isCOlInd = form.column_index.data
+    print(isCOlInd)
+
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -41,7 +53,7 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('uploaded_file',
                                     filename=filename))
-    return render_template('pigboi77.html')
+    return render_template('pigboi77.html', form = form)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
