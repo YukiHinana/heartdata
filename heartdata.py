@@ -6,6 +6,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from flask import Flask, render_template, flash, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 import os
+import emoji
 from pandas import *
 
 basedir = os.path.abspath(os.path.dirname(__file__)) 
@@ -82,8 +83,12 @@ def uploaded_file(filename, hasIndex):
     predictions = [round(value) for value in Y_pred]
 
     accuracy = accuracy_score(Y_test, predictions)
-
-    flash("Accuracy: %.2f%%" % (accuracy * 100.0))
+    if accuracy == 1:
+        flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":hundred_points:"))
+    elif accuracy >= .95:
+        flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":grinning_face:"))
+    else:
+        flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":worried_face:"))
 
     confusion = confusion_matrix(Y_test, Y_pred)
     matrix = DataFrame({'Predicted 0': confusion[0],
