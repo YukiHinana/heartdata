@@ -32,17 +32,19 @@ def upload_file():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-
+        # if user inputs an invalid file type
+        # flash an error
         if not allowed_file(file.filename):
             flash('Invalid file type')
             return redirect(request.url)
-        
+        # if user does not input a format type
+        # flash an error
         if 'hasIndex' not in request.form:
             flash('No selected index column option')
             return redirect(request.url)
 
         hasIndex = request.form['hasIndex']
-
+        # if there are no errors redirect to confusion matrix
         if file:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -54,11 +56,13 @@ def upload_file():
     return render_template('pigboi77.html')
 
 @app.route('/uploads/index <hasIndex>/<filename>')
+# on redirect read format and file
 def uploaded_file(filename, hasIndex):
     data = pandas.read_csv(filename)
     cols = len(data.columns)
     endCols = cols - 2
     startRange = 0
+    # set different column formatting rules based on selected option
     if hasIndex == "True":
         startRange = 1
         endCols = cols - 2
@@ -66,22 +70,23 @@ def uploaded_file(filename, hasIndex):
         startRange = 0
         endCols = cols - 1
 
+    # loads the dataset
     dataset = loadtxt(filename, delimiter=",", skiprows=1, usecols=range(startRange, cols))
 
     X = dataset[:,0:endCols]
     Y = dataset[:,endCols]
 
     seed = np.random.seed()
-
+    # standard set_size at 20%
     test_size = .2
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size, random_state=seed)
-
+    # run model
     model = XGBClassifier()
     model.fit(X_train, Y_train)
 
     Y_pred = model.predict(X_test)
     predictions = [round(value) for value in Y_pred]
-
+    # calculate and present accuracy
     accuracy = accuracy_score(Y_test, predictions)
     if accuracy == 1:
         flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":hundred_points:"))
@@ -89,7 +94,7 @@ def uploaded_file(filename, hasIndex):
         flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":grinning_face:"))
     else:
         flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":worried_face:"))
-
+    # create confusion matrix in dataframe
     confusion = confusion_matrix(Y_test, Y_pred)
     matrix = DataFrame({'Predicted 0': confusion[0],
                         'Predicted 1': confusion[1]},
@@ -99,5 +104,5 @@ def uploaded_file(filename, hasIndex):
     return render_template('confusionMatrix.html',  tables=[matrix.to_html(classes='data')], titles=matrix.columns.values)
 
 if __name__ == "__main__":
-  app.run(debug = True)
+  app.run()
 
