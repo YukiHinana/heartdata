@@ -1,4 +1,4 @@
-# Heart Disease Data
+# Exploratory Analysis
 
 * XGBoost is an application of gradient boosted decision trees. It stands for eXtreme Gradient Boosting. It seems to be much faster than other gradient boosting techniques which is why it is so widely used. Gradient Boosting works by creating new models that predict the error of prior models. These models are then added together, it uses gradient descent to minimize the loss when adding new models.
 
