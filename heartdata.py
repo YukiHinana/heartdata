@@ -25,24 +25,30 @@ def allowed_file(filename):
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
         file = request.files['file']
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
+
+        if not allowed_file(file.filename):
+            flash('Invalid file type')
+            return redirect(request.url)
+        
+        if 'hasIndex' not in request.form:
+            flash('No selected index column option')
+            return redirect(request.url)
+
+        hasIndex = request.form['hasIndex']
+
+        if file:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            hasIndex = request.form['index']
-            if hasIndex:
-                if hasIndex == "True":
-                    return redirect(url_for('uploaded_file', filename=filename, hasIndex = True))
-                else:
-                    return redirect(url_for('uploaded_file', filename=filename, hasIndex = False))
+            if hasIndex == "True":
+                return redirect(url_for('uploaded_file', filename=filename, hasIndex = True))
+            else:
+                return redirect(url_for('uploaded_file', filename=filename, hasIndex = False))
         
     return render_template('pigboi77.html')
 

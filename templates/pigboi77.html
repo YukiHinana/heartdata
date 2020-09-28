@@ -15,11 +15,10 @@
         <input type=file name=file>
         <hr style="border: 1px solid black;" />
         Does your CSV file contain an indexing column? <br>
-        <input type="radio" name="index" id="option1" value="True"> Yes </input><br>
-        <input type="radio" name="index" id="option2" value="False"> No </input><br>
+        <input type="radio" name="hasIndex" id="option1" value="True"> Yes </input><br>
+        <input type="radio" name="hasIndex" id="option2" value="False"> No </input><br>
         <input type="submit" value=Submit>
-    </div>
-    {% with messages = get_flashed_messages() %}
+      {% with messages = get_flashed_messages() %}
       {% if messages %}
       <ul>
         {% for message in messages %}
@@ -28,5 +27,6 @@
       </ul>
       {% endif %}
       {% endwith %}
+    </div>
   </body>
 </html>
