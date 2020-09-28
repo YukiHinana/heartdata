@@ -23,4 +23,6 @@ python heartdata.py
 
 5. Open [http://localhost:5000](http://localhost:5000) in your browser.
 
-6. Profit!
+6. Import an appropriately formatted CSV file and select whether or not the first column is a variable or an index.
+
+7. Refresh the page as many times as desired to rerun the machine learning model on a random set of your data.
