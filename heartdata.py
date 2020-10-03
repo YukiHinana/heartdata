@@ -1,6 +1,10 @@
 from numpy import loadtxt
 import numpy as np
 from xgboost import XGBClassifier
+from catboost import CatBoostClassifier
+from lightgbm import LGBMClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 from flask import Flask, render_template, flash, request, redirect, url_for, send_from_directory
@@ -81,27 +85,55 @@ def uploaded_file(filename, hasIndex):
     test_size = .2
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_size, random_state=seed)
     # run model
-    model = XGBClassifier()
-    model.fit(X_train, Y_train)
+    # model = XGBClassifier()
+    # model = LGBMClassifier()
+    # model = GaussianNB()
+    # model = AdaBoostClassifier()
+    # model = RandomForestClassifier()
+    # model = CatBoostClassifier()
+    models = [XGBClassifier(), LGBMClassifier(), GaussianNB(), AdaBoostClassifier(), RandomForestClassifier(), CatBoostClassifier()]
+    mtables = []
+    for model in models:
 
-    Y_pred = model.predict(X_test)
-    predictions = [round(value) for value in Y_pred]
-    # calculate and present accuracy
-    accuracy = accuracy_score(Y_test, predictions)
-    if accuracy == 1:
-        flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":hundred_points:"))
-    elif accuracy >= .95:
-        flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":grinning_face:"))
-    else:
-        flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":worried_face:"))
-    # create confusion matrix in dataframe
-    confusion = confusion_matrix(Y_test, Y_pred)
-    matrix = DataFrame({'Predicted 0': confusion[0],
-                        'Predicted 1': confusion[1]},
-                        index=['Actual 0', 'Actual 1'])
+        classType = ""
+
+        if "CatBoostClassifier" in str(model):
+            classType = "Cat Boost Classifier"
+        elif "XGBClassifier" in str(model):
+            classType = "XGB Classifier"
+        elif "LGBMClassifier" in str(model):
+            classType = "LGBM Classifier"
+        elif "GaussianNB" in str(model):
+            classType = "Gaussian NB Classifier"
+        elif "AdaBoostClassifier" in str(model):
+            classType = "Ada Boost Classifier"
+        elif "RandomForestClassifier" in str(model):
+            classType = "Random Forest Classifier"
+
+        model.fit(X_train, Y_train)
 
 
-    return render_template('confusionMatrix.html',  tables=[matrix.to_html(classes='data')], titles=matrix.columns.values)
+        Y_pred = model.predict(X_test)
+        predictions = [round(value) for value in Y_pred]
+        # calculate and present accuracy
+        accuracy = accuracy_score(Y_test, predictions)
+        flash("Classifier used is " + classType)
+        if accuracy == 1:
+            flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":hundred_points:"))
+        elif accuracy >= .95:
+            flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":grinning_face:"))
+        else:
+            flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":worried_face:"))
+        # create confusion matrix in dataframe
+        confusion = confusion_matrix(Y_test, Y_pred)
+        matrix = DataFrame({'Predicted 0': confusion[0],
+                            'Predicted 1': confusion[1]},
+                            index=['Actual 0', 'Actual 1'])
+
+        mtables.append(matrix.to_html(classes='data'))
+
+    return render_template('confusionMatrix.html', tables=mtables)
+
 
 if __name__ == "__main__":
   app.run()

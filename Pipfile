@@ -12,6 +12,8 @@ xgboost = "*"
 sklearn = "*"
 werkzeug = "*"
 pandas = "*"
+lightgbm = "*"
+catboost = "*"
 
 [requires]
 python_version = "3.8"
