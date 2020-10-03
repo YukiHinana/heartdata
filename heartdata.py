@@ -64,8 +64,8 @@ def upload_file():
 def uploaded_file(filename, hasIndex):
     data = pandas.read_csv(filename)
     cols = len(data.columns)
-    endCols = cols - 2
-    startRange = 0
+    #endCols = cols - 2
+    #startRange = 0
     # set different column formatting rules based on selected option
     if hasIndex == "True":
         startRange = 1
@@ -93,6 +93,8 @@ def uploaded_file(filename, hasIndex):
     # model = CatBoostClassifier()
     models = [XGBClassifier(), LGBMClassifier(), GaussianNB(), AdaBoostClassifier(), RandomForestClassifier(), CatBoostClassifier()]
     mtables = []
+    messages1m = []
+    accuracies = []
     for model in models:
 
         classType = ""
@@ -117,13 +119,22 @@ def uploaded_file(filename, hasIndex):
         predictions = [round(value) for value in Y_pred]
         # calculate and present accuracy
         accuracy = accuracy_score(Y_test, predictions)
-        flash("Classifier used is " + classType)
+        #flash("Classifier used is " + classType)
+        messages1m.append("Classifier used is "+ classType + "\n")
+        '''
         if accuracy == 1:
             flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":hundred_points:"))
         elif accuracy >= .95:
             flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":grinning_face:"))
         else:
             flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":worried_face:"))
+        '''
+        if accuracy == 1:
+            accuracies.append("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":hundred_points:") + "\n")
+        elif accuracy >= .95:
+            accuracies.append("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":grinning_face:") + "\n")
+        else:
+            accuracies.append("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":worried_face:") + "\n")
         # create confusion matrix in dataframe
         confusion = confusion_matrix(Y_test, Y_pred)
         matrix = DataFrame({'Predicted 0': confusion[0],
@@ -132,7 +143,7 @@ def uploaded_file(filename, hasIndex):
 
         mtables.append(matrix.to_html(classes='data'))
 
-    return render_template('confusionMatrix.html', tables=mtables)
+    return render_template('confusionMatrix.html', tables=mtables, messages1=messages1m, accuracyList=accuracies)
 
 
 if __name__ == "__main__":

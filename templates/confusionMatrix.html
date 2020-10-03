@@ -12,9 +12,14 @@
             Calculated confusion matrix 
             </p>
             Confusion Matrix
-            {% for table in tables %}`
+            {% for table in tables %}
                 {{ table| safe }}
+                {{ messages1[loop.index0] }}
+
+                {{ accuracyList[loop.index0] }}
+
             {% endfor %}
+
             <hr>
             {% with messages = get_flashed_messages() %}
             {% if messages %}
