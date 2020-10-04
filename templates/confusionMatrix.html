@@ -14,9 +14,9 @@
             Confusion Matrix
             {% for table in tables %}
                 {{ table| safe }}
-                {{ messages1[loop.index0] }}
-
-                {{ accuracyList[loop.index0] }}
+                {{ messages1[loop.index0] }} <br>
+                {{ accuracyList[loop.index0] }} <br>
+                {{ shaps[loop.index0]}} <br>
 
             {% endfor %}
 

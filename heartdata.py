@@ -9,6 +9,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 from flask import Flask, render_template, flash, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
+import matplotlib.pyplot as plt
+import shap
 import os
 import emoji
 from pandas import *
@@ -95,6 +97,8 @@ def uploaded_file(filename, hasIndex):
     mtables = []
     messages1m = []
     accuracies = []
+    shaps1 = []
+    index = 0
     for model in models:
 
         classType = ""
@@ -143,9 +147,17 @@ def uploaded_file(filename, hasIndex):
 
         mtables.append(matrix.to_html(classes='data'))
 
+        shap_model = shap.TreeExplainer(model)
+        shap_model_values = shap_model.shap_values(X_train)
+        #   shap_df = DataFrame(shap_model_values, columns=X_train.columns.values)
+        png_name = "summary_plot" + str(index)+".png"
+        plot = shap.summary_plot(shap_model_values, X_train, show=false)
+        plt.savefig(png_name)
+        index += 1
+
     return render_template('confusionMatrix.html', tables=mtables, messages1=messages1m, accuracyList=accuracies)
 
 
 if __name__ == "__main__":
-  app.run()
+  app.run(debug = True)
 

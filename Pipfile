@@ -14,6 +14,8 @@ werkzeug = "*"
 pandas = "*"
 lightgbm = "*"
 catboost = "*"
+shap = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.8"
