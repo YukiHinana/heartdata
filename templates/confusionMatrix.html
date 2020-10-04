@@ -9,15 +9,18 @@
             <h1>Confushion Matrix</h1>
             <div style="height: 10px"></div>
             <p>
-            Calculated confusion matrix 
+            Calculated all models!
             </p>
-            Confusion Matrix
+            Confusion Matrices
             {% for table in tables %}
                 {{ table| safe }}
                 {{ messages1[loop.index0] }} <br>
+                Model Metrics <br>
                 {{ accuracyList[loop.index0] }} <br>
-                {{ shaps[loop.index0]}} <br>
-
+                {{ sensitivities[loop.index0]}}<br>
+                {{ specificities[loop.index0]}}<br>
+                {{ precisions[loop.index0]}}<br>
+                {{ f1_scores[loop.index0]}} <br>
             {% endfor %}
 
             <hr>

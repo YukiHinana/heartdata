@@ -10,7 +10,6 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from flask import Flask, render_template, flash, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
-import shap
 import os
 import emoji
 from pandas import *
@@ -97,8 +96,10 @@ def uploaded_file(filename, hasIndex):
     mtables = []
     messages1m = []
     accuracies = []
-    shaps1 = []
-    index = 0
+    sensitivities = []
+    specificities = []
+    precisions = []
+    f1_scores = []
     for model in models:
 
         classType = ""
@@ -139,24 +140,35 @@ def uploaded_file(filename, hasIndex):
             accuracies.append("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":grinning_face:") + "\n")
         else:
             accuracies.append("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":worried_face:") + "\n")
+
         # create confusion matrix in dataframe
         confusion = confusion_matrix(Y_test, Y_pred)
-        matrix = DataFrame({'Predicted 0': confusion[0],
-                            'Predicted 1': confusion[1]},
-                            index=['Actual 0', 'Actual 1'])
+        matrix = DataFrame({'Predicted Negative': confusion[0],
+                            'Predicted Positive': confusion[1]},
+                            index=['True Negative', 'True Positive'])
 
         mtables.append(matrix.to_html(classes='data'))
 
-        shap_model = shap.TreeExplainer(model)
-        shap_model_values = shap_model.shap_values(X_train)
-        #   shap_df = DataFrame(shap_model_values, columns=X_train.columns.values)
-        png_name = "summary_plot" + str(index)+".png"
-        plot = shap.summary_plot(shap_model_values, X_train, show=false)
-        plt.savefig(png_name)
-        index += 1
+        sensitivity = confusion[1][1]/(confusion[1][1] + confusion[1][0])
+        message(sensitivity, "Sensitivity", sensitivities)
+        specificity = confusion[0][0]/(confusion[0][0] + confusion[0][1])
+        message(specificity, "Specificity", specificities)
+        precision = confusion[1][1]/(confusion[1][1] + confusion[0][1])
+        message(precision, "Precision", precisions)
+        f1_score = (2*precision*sensitivity)/(sensitivity+precision)
+        message(f1_score, "F1-Score", f1_scores)
 
-    return render_template('confusionMatrix.html', tables=mtables, messages1=messages1m, accuracyList=accuracies)
+    return render_template('confusionMatrix.html', tables=mtables, messages1=messages1m, accuracyList=accuracies, sensitivities=sensitivities,
+                            specificities=specificities, precisions=precisions, f1_scores=f1_scores)
 
+
+def message(value, valueName, storage):
+    if value == 1:
+        storage.append(valueName + ": %.2f%%" % (value * 100.0) + emoji.emojize(":hundred_points:") + "\n")
+    elif value >= .95:
+        storage.append(valueName + ": %.2f%%" % (value* 100.0) + emoji.emojize(":grinning_face:") + "\n")
+    else:
+        storage.append(valueName + ": %.2f%%" % (value * 100.0) + emoji.emojize(":worried_face:") + "\n")
 
 if __name__ == "__main__":
   app.run(debug = True)
