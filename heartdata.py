@@ -9,11 +9,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 from flask import Flask, render_template, flash, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
+import IPython
+import matplotlib
 import matplotlib.pyplot as plt
+import shap
 import os
 import emoji
+from io import BytesIO
+import base64
 from pandas import *
-
+matplotlib.use('agg')
 basedir = os.path.abspath(os.path.dirname(__file__)) 
 
 UPLOAD_FOLDER = os.path.join(basedir)
@@ -60,7 +65,7 @@ def upload_file():
         
     return render_template('pigboi77.html')
 
-@app.route('/uploads/index <hasIndex>/<filename>')
+@app.route('/uploads/<hasIndex>/<filename>')
 # on redirect read format and file
 def uploaded_file(filename, hasIndex):
     data = pandas.read_csv(filename)
@@ -71,9 +76,11 @@ def uploaded_file(filename, hasIndex):
     if hasIndex == "True":
         startRange = 1
         endCols = cols - 2
+        featureNames = list(data.columns.values.tolist())[1:]
     else: 
         startRange = 0
         endCols = cols - 1
+        featureNames = list(data.columns.values.tolist())[:-1]
 
     # loads the dataset
     dataset = loadtxt(filename, delimiter=",", skiprows=1, usecols=range(startRange, cols))
@@ -100,6 +107,9 @@ def uploaded_file(filename, hasIndex):
     specificities = []
     precisions = []
     f1_scores = []
+    images = []
+    images2 = []
+    index = 0
     for model in models:
 
         classType = ""
@@ -134,13 +144,7 @@ def uploaded_file(filename, hasIndex):
         else:
             flash("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":worried_face:"))
         '''
-        if accuracy == 1:
-            accuracies.append("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":hundred_points:") + "\n")
-        elif accuracy >= .95:
-            accuracies.append("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":grinning_face:") + "\n")
-        else:
-            accuracies.append("Accuracy: %.2f%%" % (accuracy * 100.0) + emoji.emojize(":worried_face:") + "\n")
-
+        message(accuracy, "Accuracy", accuracies)
         # create confusion matrix in dataframe
         confusion = confusion_matrix(Y_test, Y_pred)
         matrix = DataFrame({'Predicted Negative': confusion[0],
@@ -157,9 +161,31 @@ def uploaded_file(filename, hasIndex):
         message(precision, "Precision", precisions)
         f1_score = (2*precision*sensitivity)/(sensitivity+precision)
         message(f1_score, "F1-Score", f1_scores)
+        
+        if index == 0 or index == 1 or index == 4 or index == 5:
+            shap.initjs() 
+            explainer = shap.TreeExplainer(model)
+            shap_values = explainer.shap_values(X_train)
+            shap.summary_plot(shap_values, X_train, featureNames, plot_type="bar", show=False)
+            plots(images)
+            shap.force_plot(explainer.expected_value[0,:], shap_values[0,:], featureNames, show=False)
+            plots(images2)
+        else:
+            images.append(None)
+            images2.append(None)
 
+        
+        index += 1 
     return render_template('confusionMatrix.html', tables=mtables, messages1=messages1m, accuracyList=accuracies, sensitivities=sensitivities,
-                            specificities=specificities, precisions=precisions, f1_scores=f1_scores)
+                            specificities=specificities, precisions=precisions, f1_scores=f1_scores, images=images, images2=images2)
+
+
+def plots(storage):
+    buf = BytesIO()
+    plt.savefig(buf, format="png")
+    plt.close()
+    data = base64.b64encode(buf.getbuffer()).decode("ascii")
+    storage.append(f'data:image/png;base64,{data}')
 
 
 def message(value, valueName, storage):

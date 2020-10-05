@@ -15,14 +15,18 @@
             {% for table in tables %}
                 {{ table| safe }}
                 {{ messages1[loop.index0] }} <br>
-                Model Metrics <br>
+                <h3>Model Metrics </h3>
                 {{ accuracyList[loop.index0] }} <br>
-                {{ sensitivities[loop.index0]}}<br>
-                {{ specificities[loop.index0]}}<br>
-                {{ precisions[loop.index0]}}<br>
-                {{ f1_scores[loop.index0]}} <br>
+                {{ sensitivities[loop.index0] }}<br>
+                {{ specificities[loop.index0] }}<br>
+                {{ precisions[loop.index0] }}<br>
+                {{ f1_scores[loop.index0] }} <br>
+                <h3> Shap Plots </h3>
+                {% if images[loop.index0] %}
+                <img src="{{ images[loop.index0] }}">   
+                <img src="{{ images2[loop.index0] }}">
+                {% endif %}
             {% endfor %}
-
             <hr>
             {% with messages = get_flashed_messages() %}
             {% if messages %}
