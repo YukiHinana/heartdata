@@ -164,8 +164,14 @@ def uploaded_file(filename, hasIndex):
         if index == 0 or index == 1 or index == 4 or index == 5:
             shap.initjs() 
             explainer = shap.TreeExplainer(model)
-            shap_values = explainer.shap_values(X_train)
-            shap.summary_plot(shap_values, X_train, featureNames, plot_type="bar", show=False, plot_size=(5,5))
+            shap_values = explainer.shap_values(X_test)
+            shap.summary_plot(shap_values, X_test, featureNames, plot_type="bar", show=False, plot_size = (5,5))
+            plots(images)
+        elif index == 2 or index == 3:
+            shap.initjs() 
+            explainer = shap.KernelExplainer(model.predict_proba, X_train)
+            shap_values = explainer.shap_values(X_test)
+            shap.summary_plot(shap_values, X_test, featureNames)
             plots(images)
         else:
             images.append(None)
