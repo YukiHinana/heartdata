@@ -108,7 +108,6 @@ def uploaded_file(filename, hasIndex):
     precisions = []
     f1_scores = []
     images = []
-    images2 = []
     index = 0
     for model in models:
 
@@ -168,16 +167,13 @@ def uploaded_file(filename, hasIndex):
             shap_values = explainer.shap_values(X_train)
             shap.summary_plot(shap_values, X_train, featureNames, plot_type="bar", show=False)
             plots(images)
-            shap.force_plot(explainer.expected_value[0,:], shap_values[0,:], featureNames, show=False)
-            plots(images2)
         else:
             images.append(None)
-            images2.append(None)
 
         
         index += 1 
     return render_template('confusionMatrix.html', tables=mtables, messages1=messages1m, accuracyList=accuracies, sensitivities=sensitivities,
-                            specificities=specificities, precisions=precisions, f1_scores=f1_scores, images=images, images2=images2)
+                            specificities=specificities, precisions=precisions, f1_scores=f1_scores, images=images)
 
 
 def plots(storage):
