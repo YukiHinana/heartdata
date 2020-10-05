@@ -165,7 +165,7 @@ def uploaded_file(filename, hasIndex):
             shap.initjs() 
             explainer = shap.TreeExplainer(model)
             shap_values = explainer.shap_values(X_train)
-            shap.summary_plot(shap_values, X_train, featureNames, plot_type="bar", show=False)
+            shap.summary_plot(shap_values, X_train, featureNames, plot_type="bar", show=False, plot_size=(5,5))
             plots(images)
         else:
             images.append(None)
@@ -178,7 +178,7 @@ def uploaded_file(filename, hasIndex):
 
 def plots(storage):
     buf = BytesIO()
-    plt.savefig(buf, format="png")
+    plt.savefig(buf, format="png", bbox_inches = "tight")
     plt.close()
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     storage.append(f'data:image/png;base64,{data}')
