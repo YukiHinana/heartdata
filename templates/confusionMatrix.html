@@ -9,7 +9,9 @@
             <h1>Confushion Matrix</h1>
             <div style="height: 10px"></div>
             <p>
-            Calculated all models!
+            Calculated all models! Thank you for waiting on the results!<br>
+            Also you kind of have to grade this so I guess not much of a choice, but thanks anyways! <br>
+            Note: Sample size for GaussianNB model and AdaBoostClassifier has been limited to 100 for runtime purposes.
             </p>
             Confusion Matrices
             {% for table in tables %}
@@ -23,7 +25,7 @@
                 {{ f1_scores[loop.index0] }} <br>
                 <h3> Shap Plots </h3>
                 {% if images[loop.index0] %}
-                <img src="{{ images[loop.index0] }}" >  
+                <p style="text-align:center;"><img src="{{ images[loop.index0] }}" alt="Shap Plot"></p>
                 {% endif %}
             {% endfor %}
             <hr>

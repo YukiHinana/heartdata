@@ -160,18 +160,19 @@ def uploaded_file(filename, hasIndex):
         message(precision, "Precision", precisions)
         f1_score = (2*precision*sensitivity)/(sensitivity+precision)
         message(f1_score, "F1-Score", f1_scores)
+
         
         if index == 0 or index == 1 or index == 4 or index == 5:
             shap.initjs() 
             explainer = shap.TreeExplainer(model)
             shap_values = explainer.shap_values(X_test)
-            shap.summary_plot(shap_values, X_test, featureNames, plot_type="bar", show=False, plot_size = (5,5))
+            shap.summary_plot(shap_values, X_test, featureNames, plot_type="bar", show=False, plot_size = (4,4))
             plots(images)
         elif index == 2 or index == 3:
             shap.initjs() 
             explainer = shap.KernelExplainer(model.predict_proba, X_train)
-            shap_values = explainer.shap_values(X_test)
-            shap.summary_plot(shap_values, X_test, featureNames)
+            shap_values = explainer.shap_values(X_test, nsamples=100)
+            shap.summary_plot(shap_values, X_test, featureNames, show=False, plot_size=(4,4))
             plots(images)
         else:
             images.append(None)
